@@ -13,11 +13,11 @@ FTN::Message::serialno - base class for dealing with FTN message serialno.
 
 =head1 VERSION
 
-Version 20141120
+Version 20141121
 
 =cut
 
-our $VERSION = '20141120';
+our $VERSION = '20141121';
 
 =head1 SYNOPSIS
 

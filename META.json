@@ -33,13 +33,13 @@
    "provides" : {
       "FTN::Message::serialno" : {
          "file" : "lib/FTN/Message/serialno.pm",
-         "version" : "20141120"
+         "version" : "20141121"
       },
       "FTN::Message::serialno::File" : {
          "file" : "lib/FTN/Message/serialno/File.pm",
-         "version" : "20141120"
+         "version" : "20141121"
       }
    },
    "release_status" : "stable",
-   "version" : "20141120"
+   "version" : "20141121"
 }

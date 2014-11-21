@@ -2,14 +2,14 @@
 use ExtUtils::MakeMaker;
 WriteMakefile
 (
-  'PL_FILES' => {},
-  'NAME' => 'FTN::Message::serialno',
-  'INSTALLDIRS' => 'site',
   'VERSION_FROM' => 'lib/FTN/Message/serialno.pm',
-  'EXE_FILES' => [],
+  'NAME' => 'FTN::Message::serialno',
   'PREREQ_PM' => {
-                   'File::Spec' => 0,
-                   'Test::More' => 0
-                 }
+                   'Test::More' => 0,
+                   'File::Spec' => 0
+                 },
+  'INSTALLDIRS' => 'site',
+  'EXE_FILES' => [],
+  'PL_FILES' => {}
 )
 ;

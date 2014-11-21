@@ -23,11 +23,11 @@ FTN::Message::serialno::File - handles FTN message serialno via file in dedicate
 
 =head1 VERSION
 
-Version 20141120
+Version 20141121
 
 =cut
 
-our $VERSION = '20141120';
+our $VERSION = '20141121';
 
 =head1 SYNOPSIS
 
@@ -55,7 +55,7 @@ Class constructor.  Has the following options:
 
 =cut
 
-sub initialize {
+sub _initialize {
   my $self = shift;
 
   my %param = @_;
@@ -133,8 +133,10 @@ Default value is '%x'.
     $param{decode_filename}
       : sub {
         shift =~ m/$self->{filename_pattern}/?
-          hex( $1 )
-            : undef;
+          ( $1 . '.' . $extension,
+	    hex( $1 )
+	  )
+            : ();
       };
 
   # encode filename
@@ -230,7 +232,7 @@ sub new {
 
   my $self = $class -> SUPER::new( @_ );
 
-  initialize( $self, @_ );      # not $self -> initialize!
+  _initialize( $self, @_ );      # not $self -> _initialize!
 
   $self;
 }
@@ -265,13 +267,15 @@ sub get_serialno {
         my $filename = $_;
         my @r;
 
-        my $t = $self -> {decode_filename}( $filename );
-        if ( defined $t ) {
-          my $full_name = $self -> full_filename( $filename );
+        my @t = $self -> {decode_filename}( $filename );
+
+        if ( @t ) {
+          # my $full_name = $self -> _full_filename( $filename );  tainted on win
+          my $full_name = $self -> _full_filename( $t[ 0 ] );
 
           push @r,
             [ $full_name,
-              $t,
+              $t[ 1 ],
             ]
               if -f $full_name;
         }
@@ -289,7 +293,7 @@ sub get_serialno {
 
       # here we try to rename
       my $new_id = ( $found_file[ 0 ][ 1 ] + 1 ) & 0xffffffff;
-      my $new_file = $self -> full_filename( $self -> {encode_filename}( $new_id ) );
+      my $new_file = $self -> _full_filename( $self -> {encode_filename}( $new_id ) );
 
       if ( rename $found_file[ 0 ][ 0 ], $new_file ) {
 	$new_serialno = sprintf $self -> {serialno_format}, $new_id;
@@ -299,7 +303,7 @@ sub get_serialno {
     } else { # nothing in found_file.  must be the very first run.  create new file and return id
       my $id = $self -> {very_first_init}();
 
-      my $fn = $self -> full_filename( $self -> {encode_filename}( $id ) );
+      my $fn = $self -> _full_filename( $self -> {encode_filename}( $id ) );
       open my $fh, '>', $fn
         or die 'cannot create file ' . $fn . ': ' . $!;
       print $fh $id;            # save start value there for a history
@@ -313,7 +317,7 @@ sub get_serialno {
 }
 
 
-sub full_filename {
+sub _full_filename {
   ref( my $self = shift ) or Carp::croak 'I am only an object method!';
 
   my $filename = shift;
